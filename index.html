@@ -10,7 +10,143 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   
   <style>
-    /* Previous CSS remains the same */
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: #1a1a1a;
+      color: #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+      position: relative;
+      padding-bottom: 60px; /* Added padding for footer */
+    }
+
+    .input-card {
+      background-color: #2c2c2c;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+      position: relative;
+      margin-top: 50px;
+      z-index: 10;
+    }
+
+    #announcement {
+      margin-bottom: 20px;
+      color: #ff6f00;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+      border: 1px solid #444;
+      border-radius: 6px;
+      font-size: 15px;
+      background-color: #3a3a3a;
+      color: #f0f0f0;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #ff6f00;
+    }
+
+    button {
+      background-color: #ff6f00;
+      color: #ffffff;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      transition: background-color 0.3s ease;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    button:hover {
+      background-color: #ff8f00;
+    }
+
+    button.loading {
+      cursor: default;
+    }
+
+    .loading-dots {
+      display: inline-block;
+      margin-left: 5px;
+    }
+
+    .loading-dots span {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      margin: 0 2px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      animation: loading-animation 1.5s infinite ease-in-out;
+    }
+
+    .loading-dots span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .loading-dots span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes loading-animation {
+      0%, 80%, 100% {
+        transform: scale(0);
+      }
+      40% {
+        transform: scale(1);
+      }
+    }
+
+    .video-section {
+      width: 100%;
+      max-width: 800px;
+      margin-top: 20px;
+      z-index: 1;
+    }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+    }
+
+    #playerFrame {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
     .download-button {
       margin-top: 20px;
     }
@@ -43,9 +179,7 @@
     </button>
   </div>
 
-  <div id="player" class="video-section">
-    <!-- Player content will be inserted here -->
-  </div>
+  <div id="player" class="video-section"></div>
 
   <footer>
     &copy; 2025 TeraBox Player. All rights reserved.
@@ -58,7 +192,6 @@
       const downloadButton = document.getElementById('downloadButton');
       
       if (url) {
-        // Start loading animation
         loadButton.classList.add('loading');
         loadButton.innerHTML = `
           <i class="fas fa-spinner"></i> Loading
@@ -71,7 +204,6 @@
 
         const playerUrl = `https://www.terabox.tech/play.html?url=${encodeURIComponent(url)}`;
 
-        // Load the player and sync with animation
         document.getElementById('player').innerHTML = `
           <div class="video-container">
             <iframe id="playerFrame" 
@@ -85,43 +217,24 @@
           </div>
         `;
 
-        // Stop loading animation when iframe is loaded
         const iframe = document.getElementById('playerFrame');
         iframe.onload = () => {
           loadButton.classList.remove('loading');
           loadButton.innerHTML = `
             <i class="fas fa-play"></i> Load Player
           `;
-          downloadButton.style.display = 'block'; // Show download button
+          downloadButton.style.display = 'block';
         };
       } else {
         alert('Please enter a valid URL');
       }
     }
 
-    async function downloadVideo() {
+    function downloadVideo() {
       const url = document.getElementById('urlInput').value.trim();
       if (url) {
-        // Use the provided API to generate the download link
-        const apiUrl = `https://apiteraboxdl.crezybotz.workers.dev/?url=${encodeURIComponent(url)}`;
-        
-        try {
-          const response = await fetch(apiUrl);
-          const data = await response.json();
-
-          // Check if the API response contains a download link
-          if (data.downloadUrl) {
-            // Open the download link in a new tab
-            window.open(data.downloadUrl, '_blank');
-          } else if (data.message) {
-            // Show the message from the API response
-            alert(data.message);
-          } else {
-            alert('No download link found in the API response.');
-          }
-        } catch (error) {
-          alert('Error fetching download link: ' + error.message);
-        }
+        const downloadUrl = `https://apiteraboxdl.crezybotz.workers.dev/?url=${encodeURIComponent(url)}`;
+        window.open(downloadUrl, '_blank');
       } else {
         alert('Please enter a valid URL');
       }
